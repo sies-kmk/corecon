@@ -1,0 +1,135 @@
+Default Key-Layers For Costar Replacement Controllers
+=====================================================
+
+ATTN: The Costar Replacement Controllers do NOT
+support PS/2. Do NOT use the PS/2 adapter with a
+Costar Replacment Controller installed !
+
+Regular Key Layer
+-----------------
+
+ANSI 104/ISO 105 for:
+ - The Kitten Paw (FILCO MJ2)
+ - The Black Petal (Rosewill RK-9000)
+ - The Ghost Squid (CMS QFXT)
+
+ANSI 87/ISO 88 for:
+ - The Pegasus Hoof (FILCO MJ2 TKL)
+ - The Frosty Flake (CMS QFR/S)
+ - The Frosty Flake 2 (CMS QFR/S)
+
+In all layouts the Menu key is changed to FN:
+
+ Menu   -> FN
+
+For 87/88 boards SCRL turns the mumber pad overlay
+on/off:
+
+ SCRL   -> NUM pad overlay on/off (for 87/8 boards) 
+
+ 7,8,9  -> Numpad 7,8,9
+ U,I,O  -> Numpad 4,5,6
+ J,K,L  -> Numpad 1,2,3
+ M      -> Numpad 0
+ .      -> Numpad .
+ /      -> Numpad /
+ ;      -> Numpad +
+ '      -> Numpad *
+ -      -> Numpad -
+ Enter  -> Numpad Enter
+ CAPL   -> NUML
+
+FN Key Layer (FN + ..)
+----------------------
+
+ RgtCtl -> FN2
+ F5     -> Play/Pause
+ F6     -> Stop
+ F7     -> Prev Track
+ F8     -> Next Track
+ F9     -> WIN Key Lock on/off
+ F10    -> Mute
+ F11    -> Volume Down
+ F12    -> Volume Up
+ Pause  -> Play/Pause
+ Del    -> Stop
+ Home   -> Prev Track
+ End    -> Next Track
+ Ins    -> Mute
+ PgUp   -> Volume Up
+ PgDn   -> Volume Down
+ Up     -> PgUp
+ Down   -> PgDn
+ Left   -> Home
+ Right  -> End
+ C      -> Start Calculator
+ B      -> Start Internet Browser
+ M      -> Start eMail Client
+ WIN    -> WIN Key Lock on/off
+ ESC    -> Cancel timer
+ 1      -> Add 1min to timer
+ 3      -> Add 30min to timer
+ 5      -> Add 5min to timer
+ 6      -> Add 60min to timer
+ 0      -> Add 10min to timer
+
+ SCRL   -> NUML (87/8 boards)
+
+ NUML   -> Local NUML on/off (104/5 boards)
+ Num1   -> Add 1min to timer (104/5 boards)
+ Num3   -> Add 30min to timer (104/5 boards)
+ Num5   -> Add 5min to timer (104/5 boards)
+ Num6   -> Add 60min to timer (104/5 boards)
+ Num0   -> Add 10min to timer (104/5 boards)
+
+FN2 Key Layer (FN + FN2 + ..)
+-----------------------------
+
+ F9     -> System Power Down
+ F10    -> System Sleep
+ F12    -> Keyboard Lock on/off
+ PrtScr -> Start Boot Loader for Firmware Update
+ Pause  -> Play/Pause
+ Ins    -> Prev Track
+ Home   -> Next Track
+ PgUp   -> Volume Up
+ PgDn   -> Volume Down
+ Del    -> LED Demo Mode on/off
+ End    -> Mute
+ Up     -> LED Brightness Up
+ Down   -> LED Brightness Down
+ Left   -> Prev Track
+ Right  -> Next Track
+ 7,8,9  -> Numpad 7,8,9
+ U,I,O  -> Numpad 4,5,6
+ J,K,L  -> Numpad 1,2,3
+ M      -> Numpad 0
+ .      -> Numpad .
+ /      -> Numpad /
+ ;      -> Numpad +
+ '      -> Numpad *
+ -      -> Numpad -
+ Enter  -> Numpad Enter
+
+ SCRL   -> SCRL (for 87/8 boards)
+ CAPL   -> NUML (for 87/8 boards)
+
+ NUML   -> Local NUML on/off (104/5 boards)
+ Num/   -> / (104/5 boards)
+ Num-   -> - (104/5 boards)
+ NumEnt -> Enter (104/5 boards)
+ Num0-9 -> 0-9 (104/5 boards)
+
+Local NUM Lock Layer (104/5 boards)
+-----------------------------------
+
+ NUML   -> Local NUML off
+ Num0-9 -> 0-9
+ Num.   -> .
+
+LED's
+-----
+
+For boards without WIN LED, the WIN lock status is
+superimposed on the SCRL LED and the FN key status
+is superimposed on the NUML or CAPL LED.
