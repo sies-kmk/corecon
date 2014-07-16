@@ -17,6 +17,8 @@ if ~%2 == ~ goto p2ok
 if ~%2 == ~all goto p2ok
 if ~%2 == ~clean goto p2ok
 
+goto usage
+
 :p2ok
 
 if ~%1 == ~flake set MODEL=FrostyFlake
@@ -26,7 +28,8 @@ if ~%1 == ~paw set MODEL=KittenPaw
 if ~%1 == ~petal set MODEL=BlackPetal
 if ~%1 == ~squid set MODEL=GhostSquid
 
-copy Makefile bin >NUL
+md bin 2>NUL
+copy /Y Makefile bin >NUL
 
 cd bin
 
@@ -35,6 +38,7 @@ set path=C:\Tools\avrgcc\bin;%path%
 if not ~%2 == ~clean echo.
 if not ~%2 == ~clean C:\Tools\avrgcc\bin\make clean
 echo.
+
 C:\Tools\avrgcc\bin\make %2
 
 goto bye
