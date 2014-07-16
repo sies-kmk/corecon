@@ -119,45 +119,31 @@ int FA_NORETURN( main ) ( void )
 	    kbd_sendrep |=
 		read_matrix( SIG_MAINT ) ;	// Read & maintain key matrix
 
-	    if ( (kbd_sendrep & REP0_CHG) && ! usb_IN_busy( EP_HID_KBD ) )
+	    if ( (kbd_sendrep & REP0_CHG) )
 	    {
 		sLED_on() ;
 
 	      #if USB_REPORT_SZ_KBD > 8
-		if ( ! kbd_protocol )		// Boot protocol
-		    usb_send_IN( VP( &kbd_report ), 8, EP_HID_KBD ) ;
-		else
+		if ( usb_send_IN( VP( &kbd_report ), kbd_protocol ? sizeof( kbd_report ) : 8, EP_HID_KBD ) )
+	      #else
+		if ( usb_send_IN( VP( &kbd_report ), sizeof( kbd_report ), EP_HID_KBD ) )
 	      #endif
-		    usb_send_IN( VP( &kbd_report ), sizeof( kbd_report ), EP_HID_KBD ) ;
-
-		kbd_sendrep &= ~REP0_CHG ;	// reset send report flag
-		kbd_idle_cnt = kbd_idle_rate ;	// reset idle counter
+		{
+		    kbd_sendrep &= ~REP0_CHG ;		// reset send report flag
+		    kbd_idle_cnt = kbd_idle_rate ;	// reset idle counter
+		}
 
 		sLED_off() ;
 	    }
 
 	  #if ENABLE_CTRL_KEYS
-	    if ( (kbd_sendrep & REP1_CHG) && ! usb_IN_busy( EP_HID_CTRL ) )
-	    {
-		sLED_on() ;
-
-		usb_send_IN( VP( &ctrl_report1 ), sizeof( ctrl_report1 ), EP_HID_CTRL ) ;
-
+	    if ( (kbd_sendrep & REP1_CHG) &&
+		 usb_send_IN( VP( &ctrl_report1 ), sizeof( ctrl_report1 ), EP_HID_CTRL ) )
 		kbd_sendrep &= ~REP1_CHG ;
 
-		sLED_off() ;
-	    }
-
-	    if ( (kbd_sendrep & REP2_CHG) && ! usb_IN_busy( EP_HID_CTRL ) )
-	    {
-		sLED_on() ;
-
-		usb_send_IN( VP( &ctrl_report2 ), sizeof( ctrl_report2 ), EP_HID_CTRL ) ;
-
+	    if ( (kbd_sendrep & REP2_CHG) &&
+		 usb_send_IN( VP( &ctrl_report2 ), sizeof( ctrl_report2 ), EP_HID_CTRL ) )
 		kbd_sendrep &= ~REP2_CHG ;
-
-		sLED_off() ;
-	    }
 	  #endif
 
 	    wdt_reset() ;		// Pet watchdog
