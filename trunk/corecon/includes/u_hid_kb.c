@@ -280,6 +280,8 @@ uint8_t usb_remote_wakeup ( void )
 
 // Check if the IN pipe is busy
 
+#if DEAD_CODE
+
 uint8_t usb_IN_busy ( uint8_t ep )
 {
     uint8_t
@@ -299,6 +301,8 @@ uint8_t usb_IN_busy ( uint8_t ep )
     EXIT_CRITICAL_RET( f ) ;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
 // Send data via IN pipe
@@ -314,8 +318,7 @@ uint8_t usb_send_IN ( uint8_t *data, uint8_t len, uint8_t ep )
 
     UENUM = ep ;
 
-    // We really don't want blocking and main() only
-    // calls if ! usb_IN_busy() anyways.
+    // We really don't want blocking for now
 #if DEAD_CODE
 
     uint8_t
@@ -340,6 +343,9 @@ uint8_t usb_send_IN ( uint8_t *data, uint8_t len, uint8_t ep )
 	UENUM = ep ;
     }
 #endif
+
+    if ( bit_is_clear( UEINTX, RWAL ) )	// Buffer full
+	EXIT_CRITICAL_RET( FALSE ) ;
 
     for ( ; len-- ; )			// Write data to FIFO
 	UEDATX = *data++ ;

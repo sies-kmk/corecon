@@ -25,9 +25,6 @@ extern uint8_t
 extern uint8_t
     usb_remote_wakeup( void ) ;		// USB remote wakeup
 
-extern uint8_t
-    usb_IN_busy( uint8_t ep ) ;		// Check if IN pipe is busy
-
 extern uint8_t				// Send data via IN pipe
     usb_send_IN( uint8_t *data, uint8_t len, uint8_t ep ) ;
 
