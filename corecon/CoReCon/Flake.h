@@ -201,38 +201,6 @@ static inline uint8_t
     if ( fLock )
 	return ( 0 ) ;
 
-  #if defined(_QF_3)
-    //          -   LN   F1   F2
-    // CAPL  CAPL NUML CAPL CAPL
-    // WINL  WINL WINL WINL WINL
-    // SCRL  LNML LNML SCRL NUML
-
-    if ( fFN == 1 )
-    {
-	if ( kbd_leds & mLED_CAPS )
-	    _mLeds |= mLED_CAP ;
-
-	if ( kbd_leds & mLED_SCRL )
-	    _mLeds |= mLED_SCR ;
-    }
-    else
-    if ( fFN == 2 )
-    {
-	if ( kbd_leds & mLED_CAPS )
-	    _mLeds |= mLED_CAP ;
-
-	if ( kbd_leds & mLED_NUML )
-	    _mLeds |= mLED_SCR ;
-    }
-    else
-    if ( fNumLk )
-    {
-	_mLeds |= mLED_SCR ;
-
-	if ( kbd_leds & mLED_NUML )
-	    _mLeds |= mLED_CAP ;
-    }
-  #else
     //          -   LN   F1   F2
     // CAPL  CAPL NUML CAPL NUML
     // WINL  WINL WINL WINL WINL
@@ -263,7 +231,6 @@ static inline uint8_t
 	if ( kbd_leds & mLED_NUML )
 	    _mLeds |= mLED_CAP ;
     }
-  #endif
     else
     {
 	if ( kbd_leds & mLED_CAPS )
