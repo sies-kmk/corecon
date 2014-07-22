@@ -129,7 +129,7 @@ uint8_t play_macro ( uint8_t idx )
 	sz = pgm_read_byte( &macros[idx - 1].sz ) ;
 	pm = VP( pgm_read_word( &macros[idx - 1].macro ) ) ;
 
-	timer = 0 ;
+	timer = MK_DELAY ;
 
 	return ( M_ACTIVE | REP0_CHG ) ;// Signal active macro
     }
