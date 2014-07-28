@@ -211,7 +211,7 @@ static inline uint8_t
 
 	set_leds( mLED_CAP,		// Superimpose FN status to CAP LED
 		  (fFN ? (LED_LVL_MAX - led_lvl) : 0) +
-		  (((kbd_leds & mLED_CAPS) || fNumLk) ? led_lvl : 0) ) ;
+		  ((kbd_leds & mLED_CAPS) ? led_lvl : 0) ) ;
     }
 
     if ( (kbd_leds & mLED_SCRL) || fWinLk )

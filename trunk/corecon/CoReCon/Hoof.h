@@ -200,13 +200,13 @@ static inline uint8_t
 		  ((kbd_leds & mLED_CAPS) ? led_lvl : 0) ) ;
     }
 
-    if ( (kbd_leds & mLED_SCRL) || fFN )
+    if ( (kbd_leds & mLED_SCRL) || fFN || fWinLk )
     {
 	_mLeds |= mLED_SCR ;
 
 	set_leds( mLED_SCR,		// Superimpose FN status
 		  (fFN ? LED_LVL_MAX - led_lvl : 0) +
-		  ((kbd_leds & mLED_SCRL) ? led_lvl : 0) ) ;
+		  (((kbd_leds & mLED_SCRL) || fWinLk) ? led_lvl : 0) ) ;
     }
 
     return ( _mLeds ) ;
