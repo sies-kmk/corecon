@@ -53,8 +53,8 @@ goto bye
 :usage
 
 echo.
-echo. Syntax to build the firmware for Costar Replacement Controllers
-echo. by Bathroom Epiphanies Inc.:
+echo. Syntax to build the firmware for Bathroom Epiphanies Inc.
+echo. Costar Replacement Controllers:
 echo.
 echo. make {flake^|flake2^|hoof^|paw^|petal^|squid} [all^|clean]
 
