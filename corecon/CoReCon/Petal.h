@@ -139,6 +139,11 @@
 #define	bLED_SLP		bLED_SCR
 #define	pLED_SLP		pLED_SCR
 
+#define mLED_SLP		_BV(bLED_SLP)
+
+#undef  LED_LVL_DEF
+#define LED_LVL_DEF		40
+
 //------------------------------------------------------------------------------
 // Demo Core
 
@@ -146,9 +151,6 @@
 
 #define demo_leds()		__WRAP__(			\
 	{							\
-	    if ( fLock )					\
-		set_leds_raw( mLED_SCR, pgm_read_byte( breathe + idx ) ) ;	\
-	    else						\
 	    if ( dir )						\
 	    {							\
 		set_leds_raw( mLED_NUM, pgm_read_byte( breathe + idx ) ) ;	\
@@ -188,9 +190,6 @@ static inline uint8_t
     uint8_t
 	_mLeds = 0 ;
 
-    if ( fLock )
-	return ( 0 ) ;
-
     if ( (kbd_leds & mLED_NUML) || fNumLk )
     {
 	if ( fNumLk && (kbd_leds & mLED_NUML) )
@@ -219,8 +218,8 @@ static inline uint8_t
 	_mLeds |= mLED_SCR ;
 
 	set_leds( mLED_SCR,		// Superimposed WIN lock to SCR LED
-		  (fWinLk ? LED_LVL_MAX - led_lvl : 0) +
-		  ((kbd_leds & mLED_SCRL) ? led_lvl : 0) ) ;
+		  ((kbd_leds & mLED_SCRL) ? LED_LVL_MAX - led_lvl : 0) +
+		  (fWinLk ? led_lvl : 0) ) ;
     }
 
     return ( _mLeds ) ;

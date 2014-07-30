@@ -141,6 +141,8 @@
 #define	bLED_SLP		bLED_SCR
 #define	pLED_SLP		pLED_SCR
 
+#define mLED_SLP		_BV(bLED_SLP)
+
 #if defined(_QF_3)
  #undef  LED_LVL_DEF
  #define LED_LVL_DEF		40
@@ -153,9 +155,6 @@
 
 #define demo_leds()		__WRAP__(			\
 	{							\
-	    if ( fLock )					\
-		set_leds_raw( mLED_WIN, pgm_read_byte( breathe + idx ) ) ;	\
-	    else						\
 	    if ( dir )						\
 	    {							\
 		set_leds_raw( mLED_CAP, pgm_read_byte( breathe + idx ) ) ;	\
@@ -193,9 +192,6 @@ static inline uint8_t
 {
     uint8_t
 	_mLeds = 0 ;
-
-    if ( fLock )
-	return ( 0 ) ;
 
     //          -   LN   F1   F2
     // CAPL  CAPL NUML CAPL NUML

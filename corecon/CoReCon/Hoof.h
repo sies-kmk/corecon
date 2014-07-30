@@ -134,6 +134,8 @@
 #define	bLED_SLP		bLED_SCR
 #define	pLED_SLP		pLED_SCR
 
+#define mLED_SLP		_BV(bLED_SLP)
+
 //------------------------------------------------------------------------------
 // Demo Core
 
@@ -141,9 +143,6 @@
 
 #define demo_leds()		__WRAP__(			\
 	{							\
-	    if ( fLock )					\
-		set_leds_raw( mLED_SCR, pgm_read_byte( breathe + idx ) ) ;	\
-	    else						\
 	    if ( dir )						\
 	    {							\
 		set_leds_raw( mLED_CAP, pgm_read_byte( breathe + idx ) ) ;	\
@@ -180,9 +179,6 @@ static inline uint8_t
 {
     uint8_t
 	_mLeds = 0 ;
-
-    if ( fLock )
-	return ( 0 ) ;
 
     if ( (kbd_leds & mLED_CAPS) || (kbd_leds & mLED_NUML) || fNumLk )
     {
