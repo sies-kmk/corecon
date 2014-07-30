@@ -437,7 +437,10 @@ static void led_demo ( uint8_t reset )
     {
 	timer = DEMO_TIMER ;
 
-	demo_leds() ;
+	if ( fLock )
+	    set_leds_raw( mLED_SLP, pgm_read_byte( breathe + idx ) ) ;
+	else
+	    demo_leds() ;
 
 	idx = (idx + 1) % ARRSZ( breathe ) ;
 
@@ -528,7 +531,10 @@ void maint_leds ( uint8_t reset )
 	}
       #endif
 
-	mLeds = do_leds() ;
+	mLeds = 0 ;
+
+	if ( ! fLock )
+	    mLeds = do_leds() ;
 
 	if ( mLeds )
 	{
