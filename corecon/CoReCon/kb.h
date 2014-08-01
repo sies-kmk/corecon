@@ -194,7 +194,7 @@ extern void
 
 #define MACRO_5()							\
 	{								\
-	    U_X, U_None, U_X, U_None					\
+	    U_Num0, U_None, U_Num0, U_None				\
 	    /* uCC(U_AC_Home), uCC(U_None) */				\
 	    /* , uDms(3000), */						\
 	    /* U_LCtr, U_LAlt, U_Del, */				\
