@@ -105,7 +105,7 @@
 
 //------------------------------------------------------------------------------
 
-// Bit definitions for the keyboard LED OUT report
+// Bit definitions for the keyboard LED OUT report, ref. only
 
 #define	bLED_NUML		0
 #define	bLED_CAPS		1
@@ -117,7 +117,7 @@
 #define	mLED_CAPS		_BV(bLED_CAPS)
 #define	mLED_SCRL		_BV(bLED_SCRL)
 
-// Bit definitions for the keyboard modifiers in the IN report
+// Bit definitions for the keyboard modifiers in the IN report, ref. only
 
 #define	bLFT_CTRL		0
 #define	bLFT_SHFT		1
@@ -147,10 +147,8 @@ static const uint8_t
 
 static uint8_t
     led_lvl,				// LED brightness level
-    demo_off ;				// No demo mode flag (can be irritating..)
-
-static uint8_t
     fFN,				// FN layer selector
+    fDemoOff,				// Flag: LED demo mode flag
     fLock,				// Flag: keyboard locked
     fNumLk,				// Flag: num-pad/local NUML active
     fWinLk ;				// Flag: WIN key lock active
@@ -373,29 +371,13 @@ static void set_leds_raw ( uint8_t leds, uint8_t lvl )
 
 //------------------------------------------------------------------------------
 
+// Set dim level for multiple LEDs. 0: off, 100: full on
+
 #define _x( n )	(255 - ((n) <= 80 ? (n) * 2 : 155 + ((n) - 80) * 4 + ((n) - 80)))
 
 static void set_leds ( uint8_t leds, uint8_t lvl )
 {
-  // Set dim level for multiple LEDs. 0: off, 100: full on
-
-    lvl = _x( lvl ) ;
-
-    if ( leds & _BV(bLED_0) )
-	OCR1AL = lvl ;
-
-    if ( leds & _BV(bLED_1) )
-	OCR1BL = lvl ;
-
-  #if defined(LED_2)
-    if ( leds & _BV(bLED_2) )
-	OCR1CL = lvl ;
-  #endif
-
-  #if defined(LED_3)
-    if ( leds & _BV(bLED_3) )
-	OCR0B  = (lvl > 6 ? ((lvl - 5) >> 1) : 0) ;
-  #endif
+    set_leds_raw( leds, _x(lvl) ) ;
 }
 
 //------------------------------------------------------------------------------
@@ -453,7 +435,7 @@ static void led_demo ( uint8_t reset )
 
 // Maintain LED's
 
-#define	DEMO_DELAY		5000	/* Start demo after 5s w/o LED activity */
+#define	DEMO_DELAY		3000	/* Start demo after 3s w/o LED activity */
 #define	LED_TIMER		1
 
 void maint_leds ( uint8_t reset )
@@ -546,7 +528,7 @@ void maint_leds ( uint8_t reset )
 	{
 	    if ( demo )			// Waiting for demo display
 	    {
-		if ( demo_off && ! fLock )
+		if ( fDemoOff && ! fLock )
 		{
 		    if ( demo == DEMO_DELAY )	// First run after LED's off
 		    {
@@ -629,7 +611,7 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
 	usage = pgm_read_byte( layer + k ) ;
 
     if ( ! usage )
-	return ( FALSE ) ;		// No usage, dead key
+	return ( FALSE ) ;		// No usage, nothing to do
 
     if ( (usage & 0x80) )		// Special handling
     {
@@ -694,7 +676,7 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
 
 	    if ( usage == U_Demo )	// LED demo mode toggle
 	    {
-		demo_off = ! demo_off ;
+		fDemoOff = ! fDemoOff ;
 
 		return ( FALSE ) ;
 	    }
@@ -880,9 +862,7 @@ static uint8_t FA_NOINLINE( key_up ) ( uint8_t k )
     }
   #endif
 
-    i = pgm_read_byte( layer + k ) ;
-
-    if ( i == U_FN && fFN )
+    if ( fFN && pgm_read_byte( layer + k ) == U_FN )
     {
 	--fFN ;				// FN key
 
@@ -1164,7 +1144,7 @@ void hw_init ( void )
 
     TCNT1 = 0 ;				// Set TEMP (T1 high byte) to 0
 
-    set_leds( mLEDS, LED_LVL_DEF ) ;	// Causes LED's to be on until USB activates
+    set_leds( mLEDS, LED_LVL_DEF ) ;	// LED's on until USB activates
 
     SetTMPS( 1, 8 ) ;			// Set T1 prescaler to / 8
 
@@ -1177,7 +1157,7 @@ void hw_init ( void )
     set_bit( TCCR1B, WGM12 ) ;
 
     led_lvl  = LED_LVL_DEF ;
-    demo_off = TRUE ;
+    fDemoOff = TRUE ;
 }
 
 //------------------------------------------------------------------------------
