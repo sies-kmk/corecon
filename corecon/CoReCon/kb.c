@@ -878,8 +878,9 @@ static uint8_t FA_NOINLINE( key_up ) ( uint8_t k )
 
 // Read and maintain key matrix
 
-#define mKDN			0b00011111	/* 2.5ms stable (max !) */
-#define mKUP			0b00100000
+#define mKUP			0b00111111	/* 3ms stable */
+#define mKDN			0b01000000
+#define mKST			0b10000000	/* b7 used for key state */
 
 uint8_t read_matrix ( uint8_t reset )
 {
@@ -913,9 +914,9 @@ uint8_t read_matrix ( uint8_t reset )
 
 	for ( r = 0 ; r < NKEYS ; ++r, ++kp )
 	    if ( pgm_read_byte( uLayer1 + r ) )
-		*kp = 0 ;		// Key exists, matrix entry active
+		*kp = 0x7F ;		// Key exists, matrix entry active
 	    else
-		*kp = 0x80 ;		// Don't track inactive matrix entries
+		*kp = 0xFF ;		// Don't track inactive matrix entries
 
 	// Clear kbd report & key code memory
 
@@ -972,16 +973,16 @@ uint8_t read_matrix ( uint8_t reset )
 
 	for ( c = NCOLS ; c-- ; )
 	{
-	    if ( ! (*kp & 0x80) )	// Track only existing keys
+	    if ( (uint8_t)~*kp )	// Track only existing keys
 	    {
-		s  = (*kp & 0x40) ;	// Get key status (b6)
-		b  = (*kp & mKDN) << 1 ;// Get debounce bits
+		s  = (*kp & mKST) ;	// Get key status
 
-		b |= (! (cb & 1)) ;
+		b  = (*kp & mKUP) << 1 ;// Get debounce bits
+		b |= (cb & 1) ;
 
 		if ( b == mKDN && ! s )	// Is down, was up
 		{
-		    s = 0x40 ;		// Remember key down
+		    s = mKST ;		// Remember key down
 
 		    ret |= key_down( kp - (keys - 1) ) ;
 		}
