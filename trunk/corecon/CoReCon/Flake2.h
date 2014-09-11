@@ -257,11 +257,10 @@ static inline uint8_t
 
     __asm__ __volatile__
     (
+	"clr	__tmp_reg__"	"\n\t"
 	"in     %0,%1"		"\n\t"
 	"bst    %0,7"		"\n\t"
-	"bld    %0,0"		"\n\t"
-	"andi   %0,0b00000001"	"\n\t"
-	"mov    __tmp_reg__,%0"	"\n\t"
+	"bld    __tmp_reg__,0"	"\n\t"
 	"in     %0,%2"		"\n\t"
 	"lsl    %0"		"\n\t"
 	"bst    %0,1"		"\n\t"

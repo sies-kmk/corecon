@@ -176,6 +176,7 @@ typedef enum
 
 #define	FA_NAKED( _f )		__FA__( _f, __naked__ )
 #define	FA_NORETURN( _f )	__FA__( _f, __noreturn__ )
+#define	FA_INLINE( _f)		__FA__( _f, __always_inline__ )
 #define	FA_NOINLINE( _f )	__FA__( _f, __noinline__ )
 #define	FA_NOINRET( _f )	__FA__( _f, __noinline__,__noreturn__ )
 #define	FA_INIT3( _f )		__FA__( _f, __used__,__naked__,__section__(".init3") )
@@ -214,8 +215,7 @@ typedef enum
 
 //------------------------------------------------------------------------------
 
-static inline uint8_t
-	__FA__( ror8, __always_inline__ ) ( uint8_t _v )
+static inline uint8_t FA_INLINE( ror8 ) ( uint8_t _v )
 {
     __asm__ __volatile__
     (
@@ -230,25 +230,7 @@ static inline uint8_t
     return ( _v ) ;
 }
 
-static inline uint16_t
-	__FA__( ror16, __always_inline__ ) ( uint16_t _v )
-{
-    __asm__ __volatile__
-    (
-	"bst    %A0,0"	"\n\t"
-	"ror    %B0"	"\n\t"
-	"bld    %B0,7"	"\n\t"
-	"ror    %A0"	"\n\t"
-	: "+r" (_v)
-	: "0" (_v)
-	: "cc"
-    ) ;
-
-    return ( _v ) ;
-}
-
-static inline uint16_t
-	__FA__( ror12, __always_inline__ ) ( uint16_t _v )
+static inline uint16_t FA_INLINE( ror12 ) ( uint16_t _v )
 {
     __asm__ __volatile__
     (
@@ -264,8 +246,23 @@ static inline uint16_t
     return ( _v ) ;
 }
 
-static inline uint8_t
-	__FA__( rol8, __always_inline__ ) ( uint8_t _v )
+static inline uint16_t FA_INLINE( ror16 ) ( uint16_t _v )
+{
+    __asm__ __volatile__
+    (
+	"bst    %A0,0"	"\n\t"
+	"ror    %B0"	"\n\t"
+	"bld    %B0,7"	"\n\t"
+	"ror    %A0"	"\n\t"
+	: "+r" (_v)
+	: "0" (_v)
+	: "cc"
+    ) ;
+
+    return ( _v ) ;
+}
+
+static inline uint8_t FA_INLINE( rol8 ) ( uint8_t _v )
 {
     __asm__ __volatile__
     (
@@ -280,8 +277,7 @@ static inline uint8_t
     return ( _v ) ;
 }
 
-static inline uint16_t
-	__FA__( rol16, __always_inline__ ) ( uint16_t _v )
+static inline uint16_t FA_INLINE( rol16 ) ( uint16_t _v )
 {
     __asm__ __volatile__
     (
@@ -297,8 +293,7 @@ static inline uint16_t
     return ( _v ) ;
 }
 
-static inline uint8_t
-	__FA__( _bv8, __always_inline__ ) ( uint8_t _v )
+static inline uint8_t FA_INLINE( _bv8 ) ( uint8_t _v )
 {
     __asm__ __volatile__
     (
