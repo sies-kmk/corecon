@@ -187,8 +187,7 @@
 static void
     set_leds( uint8_t leds, uint8_t lvl ) ;
 
-static inline uint8_t
-	__FA__( do_leds, __always_inline__ ) ( void )
+static inline uint8_t FA_INLINE( do_leds ) ( void )
 {
     uint8_t
 	_mLeds = 0 ;
@@ -249,8 +248,7 @@ static inline uint8_t
 //------------------------------------------------------------------------------
 // Read and Sort the Column Bits
 
-static inline uint8_t
-	__FA__( rd_cbits, __always_inline__ ) ( void )
+static inline uint8_t FA_INLINE( rd_cbits ) ( void )
 {
     uint8_t
 	_cb ;
