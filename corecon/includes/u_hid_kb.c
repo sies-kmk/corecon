@@ -173,27 +173,6 @@ ctrl_report_t
 #endif
 
 //******************************************************************************
-
-#if DEAD_CODE
-
-static void chk_serial ( void )
-{
-    uint8_t
-	i, *s, *d ;
-
-    d = NULL ;
-    i = USB_STRING_DESC_SER_SZ ;
-
-    if ( eeprom_read_byte( d ) == i )
-	return ;
-
-    for ( s = VP( &usbStringDescSer ) ; i-- ; ++s, ++d )
-	eeprom_write_byte( d, pgm_read_byte( s ) ) ;
-}
-
-#endif
-
-//******************************************************************************
 //  Public Functions
 //******************************************************************************
 
@@ -275,33 +254,6 @@ uint8_t usb_remote_wakeup ( void )
 
     return ( TRUE ) ;
 }
-
-//------------------------------------------------------------------------------
-
-// Check if the IN pipe is busy
-
-#if DEAD_CODE
-
-uint8_t usb_IN_busy ( uint8_t ep )
-{
-    uint8_t
-	f ;
-
-    CRITICAL_VAR() ;
-
-    ENTER_CRITICAL() ;
-
-    if ( ! usb_configuration || usb_suspend )
-	EXIT_CRITICAL_RET( FALSE ) ;	// Pipe closed
-
-    UENUM = ep ;			// select EP
-
-    f = bit_is_clear( UEINTX, RWAL ) ;
-
-    EXIT_CRITICAL_RET( f ) ;
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -759,7 +711,7 @@ ISR( USB_COM_vect )
 		{
 		  #if USB_REPORT_SZ_KBD > 8
 		    if ( ! kbd_protocol )	// Boot protocol
-			usb_send_IN( VP( &kbd_report ), 8, EP_HID_KBD ) ;
+			usb_send_EP0( VP( &kbd_report ), 8, IN_RAM ) ;
 		    else
 		  #endif
 			usb_send_EP0( VP( &kbd_report ), sizeof( kbd_report ), IN_RAM ) ;
