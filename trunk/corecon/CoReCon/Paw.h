@@ -99,9 +99,9 @@
 #define	COL_2			{ &PORTB, _BV(PB2) }
 #define	COL_3			{ &PORTB, _BV(PB3) }
 #define	COL_4			{ &PORTC, _BV(PC7) }
-#define	COL_5			{ &PORTB, _BV(PB4) }
+#define	COL_5			{ &PORTB, _BV(PB6) }
 #define	COL_6			{ &PORTB, _BV(PB5) }
-#define	COL_7			{ &PORTB, _BV(PB6) }
+#define	COL_7			{ &PORTB, _BV(PB4) }
 
 #define	pCOL1			PINC
 #define	pCOL2			PINB
@@ -239,12 +239,14 @@ static inline uint8_t FA_INLINE( rd_cbits ) ( void )
 	"andi   %0,0b00010001"	"\n\t"
 	"mov    __tmp_reg__,%0"	"\n\t"
 	"in     %0,%2"		"\n\t"
-	"bst    %0,6"		"\n\t"
+	"bst    %0,4"		"\n\t"
 	"bld    %0,7"		"\n\t"
 	"bst    %0,5"		"\n\t"
-	"bld    %0,6"		"\n\t"
-	"bst    %0,4"		"\n\t"
+	"bld    %0,4"		"\n\t"
+	"bst    %0,6"		"\n\t"
 	"bld    %0,5"		"\n\t"
+	"bst    %0,4"		"\n\t"
+	"bld    %0,6"		"\n\t"
 	"andi   %0,0b11101110"	"\n\t"
 	"or     %0,__tmp_reg__"	"\n\t"
 	: "=d" (_cb)
