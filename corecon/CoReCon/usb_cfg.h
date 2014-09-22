@@ -163,7 +163,7 @@
 //******************************************************************************
 
  #define USB_MANUFACTURER_ID		wUSB( 0x04D9 )	/* Holtek */
- #define USB_PRODUCT_ID			wUSB( 0x1818 )	/* FKBN104 */
+ #define USB_PRODUCT_ID			wUSB( 0x4545 )	/* FKBN104 */
 
  #define USB_STRING_MAN			'D','I','A','T','E','C',' ','C','o','r','p'
  #define USB_STRING_MAN_SZ		11
