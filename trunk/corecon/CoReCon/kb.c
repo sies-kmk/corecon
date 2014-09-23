@@ -905,7 +905,7 @@ uint8_t read_matrix ( uint8_t reset )
     uint8_t
 	r, c,				// row and column counters
 	cb,				// Column bits
-	b, s,				// bounce & status bits
+	b,				// bounce & status bits
 	ret ;
 
     if ( reset )
@@ -975,26 +975,39 @@ uint8_t read_matrix ( uint8_t reset )
 	{
 	    if ( (uint8_t)~*kp )	// Track only existing keys
 	    {
-		s  = (*kp & mKST) ;	// Get key status
+		b = *kp & (mKUP | mKST) ;
 
-		b  = (*kp & mKUP) << 1 ;// Get debounce bits
-		b |= (cb & 1) ;
+		// Replace
+		// b = (b & 0x80) | (b << 1) | (cb & 1) ;
+		// with asm statement to speed things up:
 
-		if ( b == mKDN && ! s )	// Is down, was up
+		asm volatile
+		(
+		    "bst  %0,7"		"\n\t"
+		    "lsl  %0"		"\n\t"
+		    "bld  %0,7"		"\n\t"
+		    "bst  %1,0"		"\n\t"
+		    "bld  %0,0"		"\n\t"
+		    : "+r" (b) 
+		    :  "r" (cb)
+		    : "cc"
+		) ;
+
+		if ( b == (mKDN & ~mKST) )	// Is down, was up
 		{
-		    s = mKST ;		// Remember key down
+		    b = (mKDN |  mKST) ;	// Remember key down
 
 		    ret |= key_down( kp - (keys - 1) ) ;
 		}
 		else
-		if ( b == mKUP &&   s )	// Is up, was down
+		if ( b == (mKUP |  mKST) )	// Is up, was down
 		{
-		    s = 0 ;		// Remember key up
+		    b = (mKUP & ~mKST) ;	// Remember key up
 
 		    ret |= key_up( kp - (keys - 1) ) ;
 		}
 
-		*kp = s | b ;		// Store key status & debounce bits
+		*kp = b ;		// Store key status & debounce bits
 	    }
 
 	    ++kp ;
