@@ -37,6 +37,7 @@
  #define MX_MIXED			'X','X'
 
  #define MX_TYPE			MX_BLUE
+// #define RK_SERIAL			'1','2','3','4','5','6','7','8','9','0'
 
 //------------------------------------------------------------------------------
 
@@ -53,8 +54,10 @@
 
  #define USB_DEVICE_VERSION		wUSB( 0x0101 )	/* 1.01 */
 
-// #define USB_STRING_SER	'2','3','2','0','1','0','4','1','2','3','4','5','6','7','8','9','0'
-// #define USB_STRING_SER_SZ		17
+ #if defined(RK_SERIAL)
+  #define USB_STRING_SER		'2','3','2','0','1','0','4',RK_SERIAL
+  #define USB_STRING_SER_SZ		17
+ #endif
 
 //******************************************************************************
 #elif defined(GhostSquid)
@@ -179,7 +182,7 @@
 
 //******************************************************************************
 #else
- #error "Controller not Implemented"
+ #error "Unknown Target Controller"
 #endif
 //******************************************************************************
 
@@ -201,7 +204,7 @@
 // Report sizes
 
 #define	USB_REPORT_SZ_KBD		(2 + KBD_KRO)	/* 1 (mods) + 1 (fill) + KRO keys */
-#define	USB_REPORT_SZ_CTRL		3	/* 1 (id) + 2 (key) */
+#define	USB_REPORT_SZ_CTRL		3		/* 1 (id) + 2 (key) */
 #define	USB_REPORT_SZ_DBG		16
 
 //------------------------------------------------------------------------------

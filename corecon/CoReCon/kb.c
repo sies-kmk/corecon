@@ -691,7 +691,7 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
 	    if ( usage == U_BtLd )	// Reboot into bootloader
 		bootloader() ;
 
-	  #if defined(__macro_h__)
+	  #if defined(__MACROS)
 	    // Macro. ATTN: may need work, safe w/ multiple keys down simult.?
 
 	    if ( fLock )
@@ -748,6 +748,9 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
 	else
       #endif
       #if ENABLE_CTRL_KEYS
+	if ( fLock )
+	    return ( FALSE ) ;
+	else
 	if ( (usage & 0xF0) == 0x80 )	// System Control
 	{
 	    kRep1 = k ;
@@ -894,7 +897,7 @@ uint8_t read_matrix ( uint8_t reset )
 	} ;
 
     static uint8_t
-      #if defined(__macro_h__)
+      #if defined(__MACROS)
 	macro,				// Flag: macro playback active
       #endif
 	keys[NKEYS] ;			// Key status'
@@ -923,7 +926,7 @@ uint8_t read_matrix ( uint8_t reset )
 	memclr8( VP( &kbd_report ), sizeof( kbd_report ) ) ;
 	memclr8( kRep0, sizeof( kRep0 ) ) ;
 
-      #if defined(__macro_h__)
+      #if defined(__MACROS)
 	macro = FALSE ;
       #endif
 
@@ -944,7 +947,7 @@ uint8_t read_matrix ( uint8_t reset )
       #endif
    }
 
-  #if defined(__macro_h__)
+  #if defined(__MACROS)
     if ( macro )			// Playing macro
     {
 	ret = play_macro( 0 ) ;
@@ -979,7 +982,7 @@ uint8_t read_matrix ( uint8_t reset )
 
 		// Replace
 		// b = (b & 0x80) | (b << 1) | (cb & 1) ;
-		// with asm statement to speed things up:
+		// with asm code to speed things up:
 
 		asm volatile
 		(
@@ -1015,7 +1018,7 @@ uint8_t read_matrix ( uint8_t reset )
 	}
     }
 
-  #if defined(__macro_h__)
+  #if defined(__MACROS)
     if ( ret & 0xF0 )
     {					// Initialize macro playback
 	ret = play_macro( (ret & 0xF0) >> 4 ) ;
@@ -1144,7 +1147,7 @@ void hw_init ( void )
 
     OCR0A = US2TM( 500, 64 ) ;		// Set output compare reg A to 500us
 
-  #if defined(LED_3)
+  #if defined(LED_3)			// 4th LED, connected to OC0B
     TCCR0A = _B1(COM0B1) | _B0(COM0B0) |	// Clr OC0B on comp. match, set at TOP
 	     _B1( WGM01) | _B1( WGM00) ;
     set_bit( TCCR0B, WGM02 ) ;			// Fast PWM 8 w/ TOP = OCRA

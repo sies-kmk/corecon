@@ -112,7 +112,7 @@ extern void
 
 #define	U_FN			0xF0	/* Function key usage */
 
-  #if defined(__macro_h__)
+  #if defined(__MACROS)
 #define	U_M1			0xF1	/* Macros 1-8, use only */
 #define	U_M2			0xF2	/* if the corresponding */
 #define	U_M3			0xF3	/* MACRO_n is defined.  */
