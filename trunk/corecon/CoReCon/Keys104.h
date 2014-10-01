@@ -43,7 +43,7 @@
  TOff,       F1,  F2,  F3,  F4, CPP,CStp,CBwd,CFwd,WLck,CMte,CVDn,CVUp, PrSc,SLck, CPP,\
   Grv, 1mn,   2,30mn,   4, 5mn,60mn,   7,   8,   9,10mn,Mins, Eql,  BS, CMte,CBwd,CVUp, LNLk,NDiv,NMul,NMns, \
   Tab,   Q,  M4,  M2,   R,   T,   Y,   U,  M1,   O,   P,LBrc,RBrc,BkSl, CStp,CFwd,CVDn, Num7,Num8,Num9,NPls, \
- LCtl,   A,   S,   D,  M3,   G,   H,   J,   K,   L,SCln,Quot,      Ent,                 Num4, 5mn,60mn,      \
+ LCtl,CCfg,   S,   D,  M3,   G,   H,   J,   K,   L,SCln,Quot,      Ent,                 Num4, 5mn,60mn,      \
  LSft,        Z,   X,CCal,  M6,CAHm,   N,CEml, Com, Dot,Slsh,     CLck,      PgUp,       1mn,Num2,30mn,NEnt, \
  LCtl,  FN,  FN,              Space,               RAlt,WLck, App,RCtl, Home,PgDn, End, 10mn,     NDot )
 

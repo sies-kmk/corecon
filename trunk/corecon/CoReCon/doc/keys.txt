@@ -62,8 +62,9 @@ FN Key Layer (FN + ..)
  Down   -> PgDn
  Left   -> Home
  Right  -> End
- C      -> Start Calculator
+ A      -> Start Media Player
  B      -> Start Internet Browser
+ C      -> Start Calculator
  M      -> Start eMail Client
  WIN    -> WIN Key Lock on/off
  ESC    -> Cancel timer
