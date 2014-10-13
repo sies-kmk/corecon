@@ -85,7 +85,8 @@ $(TARGET): $(OBJECTS)
 ## Clean target
 .PHONY: clean
 clean:
-	-rm -rf $(OBJECTS) $(MODEL).elf dep/* $(MODEL).hex $(MODEL).eep $(MODEL).lss $(MODEL).map
+	del /Q $(OBJECTS) $(MODEL).elf dep\* $(MODEL).hex $(MODEL).eep $(MODEL).lss $(MODEL).map
+##	-rm -rf $(OBJECTS) $(MODEL).elf dep/* $(MODEL).hex $(MODEL).eep $(MODEL).lss $(MODEL).map
 
 
 ## Other dependencies
