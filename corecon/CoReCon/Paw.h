@@ -231,13 +231,6 @@ static inline uint8_t FA_INLINE( rd_cbits ) ( void )
 
     __asm__ __volatile__
     (
-	"in     %0,%1"		"\n\t"
-	"bst    %0,2"		"\n\t"
-	"bld    %0,0"		"\n\t"
-	"bst    %0,7"		"\n\t"
-	"bld    %0,4"		"\n\t"
-	"andi   %0,0b00010001"	"\n\t"
-	"mov    __tmp_reg__,%0"	"\n\t"
 	"in     %0,%2"		"\n\t"
 	"bst    %0,4"		"\n\t"
 	"bld    %0,7"		"\n\t"
@@ -247,9 +240,12 @@ static inline uint8_t FA_INLINE( rd_cbits ) ( void )
 	"bld    %0,5"		"\n\t"
 	"bst    %0,4"		"\n\t"
 	"bld    %0,6"		"\n\t"
-	"andi   %0,0b11101110"	"\n\t"
-	"or     %0,__tmp_reg__"	"\n\t"
-	: "=d" (_cb)
+	"in     __tmp_reg__,%1"	"\n\t"
+	"bst    __tmp_reg__,2"	"\n\t"
+	"bld    %0,0"		"\n\t"
+	"bst    __tmp_reg__,7"	"\n\t"
+	"bld    %0,4"		"\n\t"
+	: "=r" (_cb)
 	: "I" (_SFR_IO_ADDR(pCOL1)),
 	  "I" (_SFR_IO_ADDR(pCOL2))
 	: "cc"

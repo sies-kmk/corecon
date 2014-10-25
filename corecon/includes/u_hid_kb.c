@@ -270,32 +270,6 @@ uint8_t usb_send_IN ( uint8_t *data, uint8_t len, uint8_t ep )
 
     UENUM = ep ;
 
-    // We really don't want blocking for now
-#if DEAD_CODE
-
-    uint8_t
-	to ;
-
-    for ( to = UDFNUML + 10 ; bit_is_clear( UEINTX, RWAL ) ; )
-    {
-	EXIT_CRITICAL() ;
-
-	// Timeout ?
-
-	if ( UDFNUML == to )
-	    return ( FALSE ) ;
-
-	ENTER_CRITICAL() ;
-
-	// has the USB gone offline ?
-
-	if ( ! usb_configured() )
-	    EXIT_CRITICAL_RET( FALSE ) ;
-
-	UENUM = ep ;
-    }
-#endif
-
     if ( bit_is_clear( UEINTX, RWAL ) )	// Buffer full
 	EXIT_CRITICAL_RET( FALSE ) ;
 
@@ -376,15 +350,8 @@ ISR( USB_GEN_vect )
 
 	    clr_bit( UDIEN, WAKEUPE ) ;
 
-//	  #if defined(INTERNAL_REL)
 	    set_bits( UDIEN, _BV(SUSPE) | _BV(EORSME) | _BV(SOFE) ) ;
-//	  #else
-//	    set_bit( UDIEN, SUSPE ) ;
-//	    usb_suspend = FALSE ;
-//	  #endif
 	}
-
-//      #if defined(INTERNAL_REL)
 
 	// Should add a 2ms timeout for falling back into suspend
 	// in case the wakeup event was spurious.
@@ -396,7 +363,6 @@ ISR( USB_GEN_vect )
 
 	    usb_suspend = FALSE ;
 	}
-//      #endif
     }
 }
 

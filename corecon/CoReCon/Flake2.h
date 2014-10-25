@@ -273,11 +273,10 @@ static inline uint8_t FA_INLINE( rd_cbits ) ( void )
 	"bld    %0,3"		"\n\t"
 	"bst    %0,0"		"\n\t"
 	"bld    %0,7"		"\n\t"
-	"andi   %0,0b11111110"	"\n\t"
 	"in     __tmp_reg__,%1"	"\n\t"
 	"bst    __tmp_reg__,7"	"\n\t"
 	"bld    %0,0"		"\n\t"
-	: "=d" (_cb)
+	: "=r" (_cb)
 	: "I" (_SFR_IO_ADDR(pCOL1)),
 	  "I" (_SFR_IO_ADDR(pCOL2))
 	: "cc"
