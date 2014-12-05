@@ -14,6 +14,7 @@
 
 // #define __MACROS			// Enable macros
 #define __TIMER				// Enable countdown timer
+// #define __ALTDEB			// Alternative debounce algorithm
 
 #include <includes.h>
 #include "usb_cfg.h"
@@ -881,9 +882,21 @@ static uint8_t FA_NOINLINE( key_up ) ( uint8_t k )
 
 // Read and maintain key matrix
 
-#define mKUP			0b00111111	/* 3ms stable */
-#define mKDN			0b01000000
-#define mKST			0b10000000	/* b7 used for key state */
+#if defined(__ALTDEB)
+ #define mKUP			0b01111111	/* 3.5ms stable */
+ #define mKDN			0b10000000
+
+ #define mKST_TRANS		0b00000010	/* "In transition" flag */
+ #define KST_UP			0
+ #define KST_DN			1
+ #define KST_T_DN		(KST_UP | mKST_TRANS)
+ #define KST_T_UP		(KST_DN | mKST_TRANS)
+ #define KST_DEAD		0xFF
+#else
+ #define mKUP			0b00111111	/* 3ms stable */
+ #define mKDN			0b01000000
+ #define mKST			0b10000000	/* b7 used for key state */
+#endif
 
 uint8_t read_matrix ( uint8_t reset )
 {
@@ -896,14 +909,28 @@ uint8_t read_matrix ( uint8_t reset )
 	    mROW			// Deselect rows
 	} ;
 
+  #if defined(__MACROS)
     static uint8_t
-      #if defined(__MACROS)
-	macro,				// Flag: macro playback active
-      #endif
+	macro ;				// Flag: macro playback active
+  #endif
+
+  #if defined(__ALTDEB)
+    static struct __keys
+	{
+	    uint8_t
+		sts, deb ;
+	}
+	keys[NKEYS] ;			// Key status'
+
+    struct __keys
+	*kp = keys ;			// -> keys
+  #else
+    static uint8_t
 	keys[NKEYS] ;			// Key status'
 
     uint8_t
 	*kp = keys ;			// -> keys
+  #endif
 
     uint8_t
 	r, c,				// row and column counters
@@ -916,10 +943,20 @@ uint8_t read_matrix ( uint8_t reset )
 	// Clear key status'
 
 	for ( r = 0 ; r < NKEYS ; ++r, ++kp )
+	{
 	    if ( pgm_read_byte( uLayer1 + r ) )
+	  #if defined(__ALTDEB)
+		kp->sts = KST_UP ;	// Key exists, matrix entry active
+	    else
+		kp->sts = KST_DEAD ;	// Don't track inactive matrix entries
+
+	    kp->deb = 0xFF ;
+	  #else
 		*kp = 0x7F ;		// Key exists, matrix entry active
 	    else
 		*kp = 0xFF ;		// Don't track inactive matrix entries
+	  #endif
+	}
 
 	// Clear kbd report & key code memory
 
@@ -974,6 +1011,96 @@ uint8_t read_matrix ( uint8_t reset )
 
 	pROW = pgm_read_byte( row_sel + r ) ;
 
+      #if defined(__ALTDEB)
+
+	if ( fWinLk )
+	{
+	    for ( c = NCOLS ; c-- ; )
+	    {
+		if ( kp->sts != KST_DEAD )	// Track only existing keys
+		{
+		    b  = (kp->deb & mKUP) << 1 ;
+		    b |= (cb & 1) ;
+
+		    if ( kp->sts == KST_UP )		// Key marked "UP"
+		    {
+			if ( ! (b & 1) )		// Started transitioning DN
+			{
+			    kp->sts = KST_T_DN ;	// Mark as trans. DN and send event
+			    ret |= key_down( kp - (keys - 1) ) ;
+			}
+		    }
+		    else
+		    if ( kp->sts == KST_DN )		// Key marked "DN"
+		    {
+			if (   (b & 1) )		// Started transitioning UP
+			{
+			    kp->sts = KST_T_UP ;	// Mark as trans. UP and send event
+			    ret |= key_up( kp - (keys - 1) ) ;
+			}
+		    }
+		    else
+		    if ( kp->sts == KST_T_DN )		// Key transitioning DN
+		    {
+			if ( b == mKDN )		// Is DN now
+			    kp->sts = KST_DN ;		// Mark as DN
+			else
+			if ( b == mKUP )		// Is UP again
+			{
+			    kp->sts = KST_UP ;		// Mark as UP and send event
+			    ret |= key_up( kp - (keys - 1) ) ;
+			}
+		    }
+		    else
+//		    if ( kp->sts == KST_T_UP )		// Key transitioning UP
+		    {
+			if ( b == mKUP )		// Is UP now
+			    kp->sts = KST_UP ;		// Mark as UP
+			else
+			if ( b == mKDN )		// Is DN again
+			{
+			    kp->sts = KST_DN ;		// Mark as DN and send event
+			    ret |= key_down( kp - (keys - 1) ) ;
+			}
+		    }
+
+		    kp->deb = b ;		// Store new key status & debounce bits
+		}
+
+		++kp ;
+		cb >>= 1 ;
+	    }
+	}
+	else
+	{
+	    for ( c = NCOLS ; c-- ; )
+	    {
+		if ( kp->sts != KST_DEAD )	// Track only existing keys
+		{
+		    b  = (kp->deb & mKUP) << 1 ;
+		    b |= (cb & 1) ;
+
+		    if ( b == mKDN && ! kp->sts )
+		    {				// Is down, was up
+			kp->sts = 1 ;		// Remember key down
+			ret |= key_down( kp - (keys - 1) ) ;
+		    }
+		    else
+		    if ( b == mKUP &&   kp->sts )
+		    {				// Is up, was down
+			kp->sts = 0 ;		// Remember key up
+			ret |= key_up( kp - (keys - 1) ) ;
+		    }
+
+		    kp->deb = b ;		// Store new key status & debounce bits
+		}
+
+		++kp ;
+		cb >>= 1 ;
+	    }
+	}
+
+      #else
 	for ( c = NCOLS ; c-- ; )
 	{
 	    if ( (uint8_t)~*kp )	// Track only existing keys
@@ -986,13 +1113,13 @@ uint8_t read_matrix ( uint8_t reset )
 
 		asm volatile
 		(
-		    "bst  %0,7"		"\n\t"
-		    "lsl  %0"		"\n\t"
-		    "bld  %0,7"		"\n\t"
-		    "bst  %1,0"		"\n\t"
-		    "bld  %0,0"		"\n\t"
-		    : "+r" (b) 
-		    :  "r" (cb)
+		    "bst  %[b],7"	"\n\t"
+		    "lsl  %[b]"		"\n\t"
+		    "bld  %[b],7"	"\n\t"
+		    "bst  %[cb],0"	"\n\t"
+		    "bld  %[b],0"	"\n\t"
+		    : [b] "+r" (b) 
+		    : [cb] "r" (cb)
 		    : "cc"
 		) ;
 
@@ -1016,6 +1143,7 @@ uint8_t read_matrix ( uint8_t reset )
 	    ++kp ;
 	    cb >>= 1 ;
 	}
+      #endif
     }
 
   #if defined(__MACROS)
