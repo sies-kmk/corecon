@@ -14,7 +14,10 @@
 
 // #define __MACROS			// Enable macros
 #define __TIMER				// Enable countdown timer
-// #define __ALTDEB			// Alternative debounce algorithm
+
+#if defined(FrostyFlake) || defined(FrostyFlake2) || defined(PegasusHoof)
+ #define __ALTDEB			// Alternative debounce algorithm
+#endif
 
 #include <includes.h>
 #include "usb_cfg.h"
@@ -883,8 +886,8 @@ static uint8_t FA_NOINLINE( key_up ) ( uint8_t k )
 // Read and maintain key matrix
 
 #if defined(__ALTDEB)
- #define mKUP			0b01111111	/* 3.5ms stable */
- #define mKDN			0b10000000
+ #define mKUP			0b00011111	/* 2.5ms stable */
+ #define mKDN			0b00100000
 
  #define mKST_TRANS		0b00000010	/* "In transition" flag */
  #define KST_UP			0
@@ -923,14 +926,13 @@ uint8_t read_matrix ( uint8_t reset )
 	keys[NKEYS] ;			// Key status'
 
     struct __keys
-	*kp = keys ;			// -> keys
   #else
     static uint8_t
 	keys[NKEYS] ;			// Key status'
 
     uint8_t
-	*kp = keys ;			// -> keys
   #endif
+	*kp = keys ;			// -> keys
 
     uint8_t
 	r, c,				// row and column counters
@@ -1022,56 +1024,56 @@ uint8_t read_matrix ( uint8_t reset )
 		    b  = (kp->deb & mKUP) << 1 ;
 		    b |= (cb & 1) ;
 
-		    if ( kp->sts == KST_UP )		// Key marked "UP"
-		    {
-			if ( ! (b & 1) )		// Started transitioning DN
-			{
-			    kp->sts = KST_T_DN ;	// Mark as trans. DN and send event
-			    ret |= key_down( kp - (keys - 1) ) ;
-			}
-		    }
-		    else
-		    if ( kp->sts == KST_DN )		// Key marked "DN"
-		    {
-			if (   (b & 1) )		// Started transitioning UP
-			{
-			    kp->sts = KST_T_UP ;	// Mark as trans. UP and send event
-			    ret |= key_up( kp - (keys - 1) ) ;
-			}
-		    }
-		    else
-		    if ( kp->sts == KST_T_DN )		// Key transitioning DN
-		    {
-			if ( b == mKDN )		// Is DN now
-			    kp->sts = KST_DN ;		// Mark as DN
-			else
-			if ( b == mKUP )		// Is UP again
-			{
-			    kp->sts = KST_UP ;		// Mark as UP and send event
-			    ret |= key_up( kp - (keys - 1) ) ;
-			}
-		    }
-		    else
-//		    if ( kp->sts == KST_T_UP )		// Key transitioning UP
-		    {
-			if ( b == mKUP )		// Is UP now
-			    kp->sts = KST_UP ;		// Mark as UP
-			else
-			if ( b == mKDN )		// Is DN again
-			{
-			    kp->sts = KST_DN ;		// Mark as DN and send event
-			    ret |= key_down( kp - (keys - 1) ) ;
-			}
-		    }
+		    kp->deb = b ;		// Store new key debounce bits
 
-		    kp->deb = b ;		// Store new key status & debounce bits
+		    if ( kp->sts == KST_UP )	// Key marked "UP"
+		    {
+			if ( ! (b & 1) )	// Started transitioning DN
+			{
+			    kp->sts = KST_T_DN ;// Mark as trans. DN and send event
+			    ret |= key_down( kp - (keys - 1) ) ;
+			}
+		    }
+		    else
+		    if ( kp->sts == KST_DN )	// Key marked "DN"
+		    {
+			if ( (b & 1) )		// Started transitioning UP
+			{
+			    kp->sts = KST_T_UP ;// Mark as trans. UP and send event
+			    ret |= key_up( kp - (keys - 1) ) ;
+			}
+		    }
+		    else
+		    if ( kp->sts == KST_T_DN )	// Key transitioning DN
+		    {
+			if ( b == mKDN )	// Is DN now
+			    kp->sts = KST_DN ;	// Mark as DN
+			else
+			if ( b == mKUP )	// Is UP again
+			{
+			    kp->sts = KST_UP ;	// Mark as UP and send event
+			    ret |= key_up( kp - (keys - 1) ) ;
+			}
+		    }
+		    else
+//		    if ( kp->sts == KST_T_UP )	// Key transitioning UP
+		    {
+			if ( b == mKUP )	// Is UP now
+			    kp->sts = KST_UP ;	// Mark as UP
+			else
+			if ( b == mKDN )	// Is DN again
+			{
+			    kp->sts = KST_DN ;	// Mark as DN and send event
+			    ret |= key_down( kp - (keys - 1) ) ;
+			}
+		    }
 		}
 
 		++kp ;
 		cb >>= 1 ;
-	    }
+	    }				// for ( NCOLS )
 	}
-	else
+	else				// fWinLk
 	{
 	    for ( c = NCOLS ; c-- ; )
 	    {
@@ -1097,10 +1099,11 @@ uint8_t read_matrix ( uint8_t reset )
 
 		++kp ;
 		cb >>= 1 ;
-	    }
-	}
+	    }				// for ( NCOLS )
+	}				// fWinLk
 
-      #else
+      #else				// __ALTDEB
+
 	for ( c = NCOLS ; c-- ; )
 	{
 	    if ( (uint8_t)~*kp )	// Track only existing keys
@@ -1142,9 +1145,11 @@ uint8_t read_matrix ( uint8_t reset )
 
 	    ++kp ;
 	    cb >>= 1 ;
-	}
-      #endif
-    }
+	}				// for ( NCOLS )
+
+      #endif				// __ALTDEB
+
+    }					// for ( NROWS )
 
   #if defined(__MACROS)
     if ( ret & 0xF0 )

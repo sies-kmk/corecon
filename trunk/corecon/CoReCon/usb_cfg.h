@@ -18,9 +18,9 @@
 
 #define	ENABLE_CTRL_KEYS		1
 
-#define	KBD_KRO				6	/* 6KRO. 14KRO tested */
+#define	KBD_KRO				14	/* 6KRO. 14KRO tested */
 
-#define	USB_EP_POLL_INTERVAL_KBD	2	/* Check EP every  2ms */
+#define	USB_EP_POLL_INTERVAL_KBD	1	/* Check EP every 1ms */
 
 //******************************************************************************
 #if defined(BlackPetal)
