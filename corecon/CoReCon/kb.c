@@ -598,6 +598,9 @@ uint8_t wakeup ( uint8_t reset )
 
 static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
 {
+    __label__
+	Send_U ;
+
   #if ENABLE_CTRL_KEYS
     static const uint16_t
 	U_CC_table[] PROGMEM =		// LUT for Consumer Control usages
@@ -710,6 +713,9 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
       #if defined(__TIMER)
 	if ( (usage & 0xF0) == 0xA0 )	// Timer setup
 	{
+	    __label__
+		Set_timer ;
+
 	    switch ( usage )
 	    {
 		case U_TOff :		// Timer off/fire
@@ -777,7 +783,7 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
       #endif
     }
     else				// Regular key
-Send_U:
+  Send_U:
     {
 	CRITICAL_VAR() ;
 
@@ -894,7 +900,7 @@ static uint8_t FA_NOINLINE( key_up ) ( uint8_t k )
  #define KST_DN			1
  #define KST_T_DN		(KST_UP | mKST_TRANS)
  #define KST_T_UP		(KST_DN | mKST_TRANS)
- #define KST_DEAD		0xFF
+ #define mKST_DEAD		0x80
 #else
  #define mKUP			0b00111111	/* 3ms stable */
  #define mKDN			0b01000000
@@ -950,7 +956,7 @@ uint8_t read_matrix ( uint8_t reset )
 	  #if defined(__ALTDEB)
 		kp->sts = KST_UP ;	// Key exists, matrix entry active
 	    else
-		kp->sts = KST_DEAD ;	// Don't track inactive matrix entries
+		kp->sts = mKST_DEAD ;	// Don't track inactive matrix entries
 
 	    kp->deb = 0xFF ;
 	  #else
@@ -1019,7 +1025,7 @@ uint8_t read_matrix ( uint8_t reset )
 	{
 	    for ( c = NCOLS ; c-- ; )
 	    {
-		if ( kp->sts != KST_DEAD )	// Track only existing keys
+		if ( ! (kp->sts & mKST_DEAD) )	// Track only existing keys
 		{
 		    b  = (kp->deb & mKUP) << 1 ;
 		    b |= (cb & 1) ;
@@ -1077,7 +1083,7 @@ uint8_t read_matrix ( uint8_t reset )
 	{
 	    for ( c = NCOLS ; c-- ; )
 	    {
-		if ( kp->sts != KST_DEAD )	// Track only existing keys
+		if ( ! (kp->sts & mKST_DEAD) )	// Track only existing keys
 		{
 		    b  = (kp->deb & mKUP) << 1 ;
 		    b |= (cb & 1) ;
