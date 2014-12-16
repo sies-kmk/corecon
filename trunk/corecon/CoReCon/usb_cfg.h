@@ -116,6 +116,8 @@
  #define MX_TYPE			MX_BLUE
 // #define QF_SERIAL			'1','2','3','4','5','6','7','8','9','0'
 
+ #define QF_COUNTRY			'U','S'
+
 //------------------------------------------------------------------------------
 
  #define USB_MANUFACTURER_ID		wUSB( 0x2516 )	/* CM Storm */
@@ -132,7 +134,7 @@
  #define USB_STRING_PRO			'K','e','y','b','o','a','r','d',' ',	\
 					'S','G','K','-',			\
 					'4','0','0','0','-',			\
-					'G','K','C',MX_TYPE,QF_TYPE,'-','U','S'
+					'G','K','C',MX_TYPE,QF_TYPE,'-',QF_COUNTRY
  #define USB_STRING_PRO_SZ		26
 
  #define USB_DEVICE_VERSION		wUSB( 0x0100 )	/* 1.00 */
