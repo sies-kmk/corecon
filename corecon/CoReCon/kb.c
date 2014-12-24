@@ -643,6 +643,19 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
 		return ( FALSE ) ;
 	    }
 
+	    if ( usage == U_BtLd )	// Reboot into bootloader
+		bootloader() ;
+
+	    if ( usage == U_Lock )	// Keyboard lock toggle
+	    {
+		fLock = ! fLock ;
+
+		return ( FALSE ) ;
+	    }
+
+	    if ( fLock )
+		return ( FALSE ) ;
+
 	    if ( usage == U_LNLk )	// Local NUM lock toggle
 	    {
 		if ( (kbd_leds & mLED_NUML) )
@@ -688,21 +701,8 @@ static uint8_t FA_NOINLINE( key_down ) ( uint8_t k )
 		return ( FALSE ) ;
 	    }
 
-	    if ( usage == U_Lock )	// Keyboard lock toggle
-	    {
-		fLock = ! fLock ;
-
-		return ( FALSE ) ;
-	    }
-
-	    if ( usage == U_BtLd )	// Reboot into bootloader
-		bootloader() ;
-
 	  #if defined(__MACROS)
 	    // Macro. ATTN: may need work, safe w/ multiple keys down simult.?
-
-	    if ( fLock )
-		return ( FALSE ) ;
 
 	    return ( (usage & 0x0F) << 4 ) ;
 	  #else
@@ -892,8 +892,10 @@ static uint8_t FA_NOINLINE( key_up ) ( uint8_t k )
 // Read and maintain key matrix
 
 #if defined(__ALTDEB)
- #define mKUP			0b00011111	/* 2.5ms stable */
- #define mKDN			0b00100000
+ #define mKUP			0b00111111	/* 3ms stable for regular deb. */
+ #define mKDN			0b01000000
+ #define mKUPX			0b00011111	/* 2.5ms stable for fast deb. */
+ #define mKDNX			0b00100000
 
  #define mKST_TRANS		0b00000010	/* "In transition" flag */
  #define KST_UP			0
@@ -904,6 +906,7 @@ static uint8_t FA_NOINLINE( key_up ) ( uint8_t k )
 #else
  #define mKUP			0b00111111	/* 3ms stable */
  #define mKDN			0b01000000
+
  #define mKST			0b10000000	/* b7 used for key state */
 #endif
 
@@ -1027,10 +1030,10 @@ uint8_t read_matrix ( uint8_t reset )
 	    {
 		if ( ! (kp->sts & mKST_DEAD) )	// Track only existing keys
 		{
-		    b  = (kp->deb & mKUP) << 1 ;
+		    b  = (kp->deb & mKUPX) << 1 ;
 		    b |= (cb & 1) ;
 
-		    kp->deb = b ;		// Store new key debounce bits
+		    kp->deb = b ;		// Save new key debounce bits
 
 		    if ( kp->sts == KST_UP )	// Key marked "UP"
 		    {
@@ -1052,10 +1055,10 @@ uint8_t read_matrix ( uint8_t reset )
 		    else
 		    if ( kp->sts == KST_T_DN )	// Key transitioning DN
 		    {
-			if ( b == mKDN )	// Is DN now
+			if ( b == mKDNX )	// Is DN now
 			    kp->sts = KST_DN ;	// Mark as DN
 			else
-			if ( b == mKUP )	// Is UP again
+			if ( b == mKUPX )	// Is UP again
 			{
 			    kp->sts = KST_UP ;	// Mark as UP and send event
 			    ret |= key_up( kp - (keys - 1) ) ;
@@ -1064,10 +1067,10 @@ uint8_t read_matrix ( uint8_t reset )
 		    else
 //		    if ( kp->sts == KST_T_UP )	// Key transitioning UP
 		    {
-			if ( b == mKUP )	// Is UP now
+			if ( b == mKUPX )	// Is UP now
 			    kp->sts = KST_UP ;	// Mark as UP
 			else
-			if ( b == mKDN )	// Is DN again
+			if ( b == mKDNX )	// Is DN again
 			{
 			    kp->sts = KST_DN ;	// Mark as DN and send event
 			    ret |= key_down( kp - (keys - 1) ) ;
@@ -1088,6 +1091,8 @@ uint8_t read_matrix ( uint8_t reset )
 		    b  = (kp->deb & mKUP) << 1 ;
 		    b |= (cb & 1) ;
 
+		    kp->deb = b ;		// Save new key debounce bits
+
 		    if ( b == mKDN && ! kp->sts )
 		    {				// Is down, was up
 			kp->sts = 1 ;		// Remember key down
@@ -1099,8 +1104,6 @@ uint8_t read_matrix ( uint8_t reset )
 			kp->sts = 0 ;		// Remember key up
 			ret |= key_up( kp - (keys - 1) ) ;
 		    }
-
-		    kp->deb = b ;		// Store new key status & debounce bits
 		}
 
 		++kp ;
@@ -1134,12 +1137,12 @@ uint8_t read_matrix ( uint8_t reset )
 
 		if ( b == (mKDN & ~mKST) )	// Is down, was up
 		{
-		    b = (mKDN |  mKST) ;	// Remember key down
+		    b = (mKDN | mKST) ;		// Remember key down
 
 		    ret |= key_down( kp - (keys - 1) ) ;
 		}
 		else
-		if ( b == (mKUP |  mKST) )	// Is up, was down
+		if ( b == (mKUP | mKST) )	// Is up, was down
 		{
 		    b = (mKUP & ~mKST) ;	// Remember key up
 
