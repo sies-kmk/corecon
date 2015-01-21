@@ -27,10 +27,9 @@
 #define	USB_PRODUCT_ID			wUSB( 0xBABE )	/* Heck, it's cute ;) */
 #define USB_DEVICE_VERSION		wUSB( 0x0200 )	/* 2.00 */
 
-#define USB_STRING_MAN			'D','e','t','l','e','f',' ', \
-					'<','G','r','e','n','d','e','l','>', ' ', \
-					'M','u','e','l','l','e','r'
-#define USB_STRING_MAN_SZ		24
+#define USB_STRING_MAN			'C','o','o','l','e','r',' ', \
+					'M','a','s','t','e','r'
+#define USB_STRING_MAN_SZ		13
 
 #define USB_STRING_PRO			'K','e','y','b','o','a','r','d',' ',	\
 					'S','G','K','-',			\
